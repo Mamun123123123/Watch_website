@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Royale Time | Cart</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen font-sans">
+
+<section class="max-w-7xl mx-auto px-6 py-12">
+<h2 class="text-3xl font-bold mb-8">Your Cart</h2>
+<div id="cartItems" class="space-y-6"></div>
+<div class="mt-8 text-right">
+<p id="totalPrice" class="text-xl font-bold mb-4">Total: ৳0</p>
+<button id="clearCart" class="bg-red-600 text-white px-6 py-3 rounded-full hover:bg-red-500">Clear Cart</button>
+</div>
+</section>
+
+<script>
+const cartItems = document.getElementById('cartItems');
+const clearCart = document.getElementById('clearCart');
+const totalPriceEl = document.getElementById('totalPrice');
+
+function loadCart() {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cartItems.innerHTML = '';
+  let total = 0;
+
+  if(cart.length === 0){
+    cartItems.innerHTML = '<p>Your cart is empty.</p>';
+    totalPriceEl.innerText = 'Total: ৳0';
+    return;
+  }
+
+  cart.forEach((item, index) => {
+    total += item.price * (item.qty || 1);
+    const div = document.createElement('div');
+    div.className = "flex items-center bg-white p-4 rounded-xl shadow-md";
+    div.innerHTML = `
+      <img src="${item.image}" class="w-24 h-24 object-cover rounded mr-4">
+      <div class="flex-1">
+        <h3 class="font-bold">${item.title}</h3>
+        <p class="text-gray-600">৳${item.price} x ${item.qty}</p>
+      </div>
+      <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-400" onclick="removeItem(${index})">Remove</button>
+    `;
+    cartItems.appendChild(div);
+  });
+
+  totalPriceEl.innerText = `Total: ৳${total}`;
+}
+
+function removeItem(index) {
+  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart.splice(index,1);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  loadCart();
+}
+
+clearCart.addEventListener('click', () => {
+  localStorage.removeItem('cart');
+  loadCart();
+});
+
+loadCart();
+</script>
+
+</body>
+</html>
